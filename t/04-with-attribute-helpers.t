@@ -6,8 +6,8 @@ use Test::More tests => 2;
 {
     package MyClass;
 
-    use MooseX::ClassAttribute;
-    use MooseX::AttributeHelpers;
+    use MouseX::ClassAttribute;
+    use MouseX::AttributeHelpers;
 
     class_has counter =>
         ( metaclass => 'Counter',

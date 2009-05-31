@@ -16,9 +16,9 @@ my @modules = all_modules();
 plan tests => scalar @modules;
 
 my %trustme =
-    ( 'MooseX::ClassAttribute'                         => [ 'init_meta', 'class_has' ],
-      'MooseX::ClassAttribute::Role::Meta::Class'      => [ 'compute_all_applicable_class_attributes' ],
-      'MooseX::ClassAttribute::Meta::Method::Accessor' => [ '.+' ]
+    ( 'MouseX::ClassAttribute'                         => [ 'init_meta', 'class_has' ],
+      'MouseX::ClassAttribute::Role::Meta::Class'      => [ 'compute_all_applicable_class_attributes' ],
+      'MouseX::ClassAttribute::Meta::Method::Accessor' => [ '.+' ]
     );
 
 for my $module ( sort @modules )

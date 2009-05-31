@@ -13,8 +13,8 @@ ok( HasClassAttribute->meta()->has_class_attribute('ObjectCount'),
     q{has_class_attribute('ObjectCount') returns true} );
 
 ok( HasClassAttribute->meta()->get_class_attribute('ObjectCount')
-                     ->meta()->does_role('MooseX::ClassAttribute::Role::Meta::Attribute'),
-    'get_class_attribute_list returns an object which does the MooseX::ClassAttribute::Role::Meta::Attribute role' );
+                     ->meta()->does_role('MouseX::ClassAttribute::Role::Meta::Attribute'),
+    'get_class_attribute_list returns an object which does the MouseX::ClassAttribute::Role::Meta::Attribute role' );
 
 my @ca = qw( Delegatee LazyAttribute ManyNames Mapping ObjectCount ReadOnlyAttribute WeakAttribute );
 
