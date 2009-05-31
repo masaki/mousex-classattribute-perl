@@ -87,7 +87,7 @@ sub generate_accessor_method_inline {
                     : ref($default) eq 'CODE'
                     ? '$default->('.$self.'('.$key.')'.')'
                     : '$default';
-        $accessor .= ' if !exists $meta->has_class_attribute('.$key.');' . "\n";
+        $accessor .= ' unless $meta->has_class_attribute('.$key.');' . "\n";
     }
 
     if ($should_deref) {
