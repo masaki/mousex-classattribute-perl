@@ -4,7 +4,7 @@ our $VERSION = '0.002';
 
 use Mouse;
 use Exporter 'import';
-our @EXPORT = 'class_has';
+our @EXPORT = qw(class_has);
 
 use MouseX::ClassAttribute::Meta::Attribute;
 use MouseX::ClassAttribute::Meta::Class;
