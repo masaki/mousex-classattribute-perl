@@ -25,7 +25,7 @@ sub generate_accessor_method_inline {
     my $accessor = 
         '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
         "sub {\n".
-        'my $meta = '.$attribute->associated_class->name .'->meta;';
+            'my $meta = '.$attribute->associated_class->name ."->meta;\n";
     if ($attribute->_is_metadata eq 'rw') {
         $accessor .= 
             '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
@@ -62,14 +62,14 @@ sub generate_accessor_method_inline {
         # this setter
         $accessor .= 'return ' if !$is_weak && !$trigger && !$should_deref;
 
-        $accessor .= $self.'('.$key.')->{value} = '.$value.';' . "\n";
+        $accessor .= '$meta->set_class_attribute_value('.$key.', '.$value.');' . "\n";
 
         if ($is_weak) {
             $accessor .= 'Scalar::Util::weaken('.$self.'('.$key.')) if ref('.$self.'('.$key.'));' . "\n";
         }
 
         if ($trigger) {
-            $accessor .= '$trigger->('.$self.'('.$key.'), '.$value.');' . "\n";
+            $accessor .= '$trigger->($_[0], '.$value.');' . "\n";
         }
 
         $accessor .= "}\n";
@@ -79,30 +79,32 @@ sub generate_accessor_method_inline {
     }
 
     if ($attribute->is_lazy) {
-        $accessor .= '$meta->get_class_attribute('.$key.')->{value} = ';
+        $accessor .= '$meta->set_class_attribute_value('.$key.', ';
 
         $accessor .= $attribute->has_builder
                 ? $self.'->$builder'
                     : ref($default) eq 'CODE'
-                    ? '$default->('.$self.'('.$key.')'.')'
+                    ? '$default->($_[0])'
                     : '$default';
+
+        $accessor .= ')';
         $accessor .= ' unless $meta->has_class_attribute('.$key.');' . "\n";
     }
 
     if ($should_deref) {
         if (ref($constraint) && $constraint->name eq 'ArrayRef') {
             $accessor .= 'if (wantarray) {
-                return @{ '.$self.'('.$key.')->{value} || [] };
+                return @{ '.$self.'('.$key.') || [] };
             }';
         }
         else {
             $accessor .= 'if (wantarray) {
-                return %{ '.$self.'('.$key.')->{value} || {} };
+                return %{ '.$self.'('.$key.') || {} };
             }';
         }
     }
 
-    $accessor .= 'return '.$self.'('.$key.')->{value};
+    $accessor .= 'return '.$self.'('.$key.');
     }';
 
     my $sub = eval $accessor;
