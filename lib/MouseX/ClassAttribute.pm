@@ -1,18 +1,30 @@
 package MouseX::ClassAttribute;
 
+use strict;
+use warnings;
+use base 'Exporter';
+use Mouse::Util::MetaRole;
+use MouseX::ClassAttribute::Role::Meta::Class;
+
 our $VERSION = '0.002';
 
-use Mouse;
-use Exporter 'import';
 our @EXPORT = qw(class_has);
 
-use MouseX::ClassAttribute::Meta::Attribute;
-use MouseX::ClassAttribute::Meta::Class;
-use MouseX::ClassAttribute::Meta::Method::Accessor;
-
 sub class_has {
+    my ($name, %opts) = @_;
     my $meta = Mouse::Meta::Class->initialize(caller);
-    $meta->add_class_attribute(@_);
+    $meta->add_class_attribute($_, %opts) for (ref $name eq 'ARRAY' ? @$name : ($name));
+}
+
+sub import {
+    my $class = shift;
+    $class->export_to_level(1);
+
+    my $for_class = caller;
+    Mouse::Util::MetaRole::apply_metaclass_roles(
+        for_class       => $for_class,
+        metaclass_roles => ['MouseX::ClassAttribute::Role::Meta::Class'],
+    );
 }
 
 sub unimport {
