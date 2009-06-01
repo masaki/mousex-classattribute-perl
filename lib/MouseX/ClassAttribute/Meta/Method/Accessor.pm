@@ -3,7 +3,6 @@ package MouseX::ClassAttribute::Meta::Method::Accessor;
 use strict;
 use warnings;
 use Carp ();
-use Data::Dump qw/dump/;
 
 # internal use only. do not call directly
 sub generate_accessor_method_inline {
