@@ -1,7 +1,7 @@
 use strict;
 use FindBin;
 use lib "$FindBin::Bin/lib";
-use Test::More tests => 13;
+use Test::More tests => 14;
 use Test::Exception;
 use HasClassAttribute;
 
@@ -30,9 +30,10 @@ is $class->ObjectCount => 0, 'ObjectCount() is 0';
 {
     my $object = bless {}, 'Thing';
     $class->WeakAttribute($object);
-    undef $object;
 
-    ok !defined $class->WeakAttribute, 'weak class attributes are weak';
+    ok defined $class->WeakAttribute, 'weak class attributes are weak, defined';
+    undef $object;
+    ok !defined $class->WeakAttribute, 'weak class attributes are weak, destory';
 }
 
 {

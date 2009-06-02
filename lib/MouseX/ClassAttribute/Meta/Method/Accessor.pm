@@ -19,15 +19,15 @@ sub generate_accessor_method_inline {
 
     my $compiled_type_constraint    = $constraint ? $constraint->{_compiled_type_constraint} : undef;
 
-    my $self  = '$meta->get_class_attribute_value';
+    my $self  = '$meta->get_class_attribute_values';
     my $key   = $attribute->inlined_name;
 
     my $accessor = 
         '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
         "sub {\n".
-            'my $meta = '.$attribute->associated_class->name ."->meta;\n";
+            'my $meta = '.$attribute->associated_class->name.'->meta;' . "\n";
     if ($attribute->_is_metadata eq 'rw') {
-        $accessor .= 
+        $accessor .=
             '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
             'if (scalar(@_) >= 2) {' . "\n";
 
@@ -38,6 +38,7 @@ sub generate_accessor_method_inline {
                 $accessor .=
                     "\n".
                     '#line ' . __LINE__ . ' "' . __FILE__ . "\"\n" .
+                    'require Mouse::Util::TypeConstraints;' . "\n" .
                     'my $val = Mouse::Util::TypeConstraints->typecast_constraints("'.$attribute->associated_class->name.'", $attribute->{type_constraint}, '.$value.');';
                 $value = '$val';
             }
@@ -58,16 +59,16 @@ sub generate_accessor_method_inline {
             }
         }
 
-        if ($is_weak) {
-            $accessor .= 'require Scalar::Util;' . "\n";
-            $accessor .= 'Scalar::Util::weaken('.$value.') if ref('.$value.');' . "\n";
-        }
-
         # if there's nothing left to do for the attribute we can return during
         # this setter
-        $accessor .= 'return ' if !$trigger && !$should_deref;
+        $accessor .= 'return ' if !$is_weak && !$trigger && !$should_deref;
 
-        $accessor .= '$meta->set_class_attribute_value('.$key.', '.$value.');' . "\n";
+        $accessor .= $self.'->{'.$key.'} = '.$value.';' . "\n";
+
+        if ($is_weak) {
+            $accessor .= 'require Scalar::Util;' . "\n";
+            $accessor .= 'Scalar::Util::weaken('.$self.'->{'.$key.'}) if ref('.$self.'->{'.$key.'});' . "\n";
+        }
 
         if ($trigger) {
             $accessor .= '$trigger->($_[0], '.$value.');' . "\n";
@@ -80,32 +81,30 @@ sub generate_accessor_method_inline {
     }
 
     if ($attribute->is_lazy) {
-        $accessor .= '$meta->set_class_attribute_value('.$key.', ';
+        $accessor .= $self.'->{'.$key.'} = ';
 
         $accessor .= $attribute->has_builder
                 ? $self.'->$builder'
                     : ref($default) eq 'CODE'
                     ? '$default->($_[0])'
                     : '$default';
-
-        $accessor .= ')';
-        $accessor .= ' unless $meta->has_class_attribute_value('.$key.');' . "\n";
+        $accessor .= ' if !exists '.$self.'->{'.$key.'};' . "\n";
     }
 
     if ($should_deref) {
         if (ref($constraint) && $constraint->name eq 'ArrayRef') {
             $accessor .= 'if (wantarray) {
-                return @{ '.$self.'('.$key.') || [] };
+                return @{ '.$self.'->{'.$key.'} || [] };
             }';
         }
         else {
             $accessor .= 'if (wantarray) {
-                return %{ '.$self.'('.$key.') || {} };
+                return %{ '.$self.'->{'.$key.'} || {} };
             }';
         }
     }
 
-    $accessor .= 'return '.$self.'('.$key.');
+    $accessor .= 'return '.$self.'->{'.$key.'};
     }';
 
     my $sub = eval $accessor;

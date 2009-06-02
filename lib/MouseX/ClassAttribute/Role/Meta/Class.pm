@@ -18,7 +18,7 @@ has '_class_attribute_map' => (
         keys   => 'get_class_attribute_list',
     },
     lazy      => 1,
-    default   => sub { {} },
+    default   => sub { +{} },
 );
 
 has '_class_attribute_values' => (
@@ -32,17 +32,11 @@ has '_class_attribute_values' => (
         delete => 'clear_class_attribute_value',
     },
     lazy      => 1,
-    default   => sub { $_[0]->_class_attribute_values_hashref },
+    default   => sub { +{} },
 );
 
-sub get_class_attribute_map { $_[0]->_class_attribute_map }
-
-sub _class_attribute_var_name { $_[0]->name . '::__ClassAttributeValues' }
-
-sub _class_attribute_values_hashref {
-    no strict 'refs';
-    return \%{ $_[0]->_class_attribute_var_name };
-}
+sub get_class_attribute_map    { $_[0]->_class_attribute_map    }
+sub get_class_attribute_values { $_[0]->_class_attribute_values }
 
 sub add_class_attribute {
     my $self = shift;
