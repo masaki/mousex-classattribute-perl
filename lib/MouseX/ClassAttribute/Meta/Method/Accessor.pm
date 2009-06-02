@@ -58,15 +58,16 @@ sub generate_accessor_method_inline {
             }
         }
 
+        if ($is_weak) {
+            $accessor .= 'require Scalar::Util;' . "\n";
+            $accessor .= 'Scalar::Util::weaken('.$value.') if ref('.$value.');' . "\n";
+        }
+
         # if there's nothing left to do for the attribute we can return during
         # this setter
-        $accessor .= 'return ' if !$is_weak && !$trigger && !$should_deref;
+        $accessor .= 'return ' if !$trigger && !$should_deref;
 
         $accessor .= '$meta->set_class_attribute_value('.$key.', '.$value.');' . "\n";
-
-        if ($is_weak) {
-            $accessor .= 'Scalar::Util::weaken('.$self.'('.$key.')) if ref('.$self.'('.$key.'));' . "\n";
-        }
 
         if ($trigger) {
             $accessor .= '$trigger->($_[0], '.$value.');' . "\n";
@@ -88,7 +89,7 @@ sub generate_accessor_method_inline {
                     : '$default';
 
         $accessor .= ')';
-        $accessor .= ' unless $meta->has_class_attribute('.$key.');' . "\n";
+        $accessor .= ' unless $meta->has_class_attribute_value('.$key.');' . "\n";
     }
 
     if ($should_deref) {
