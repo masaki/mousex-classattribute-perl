@@ -14,7 +14,7 @@ has '_class_attribute_map' => (
         set    => '_add_class_attribute',
         exists => 'has_class_attribute',
         get    => 'get_class_attribute',
-        delete => '_remove_class_attribute',
+        delete => 'remove_class_attribute',
         keys   => 'get_class_attribute_list',
     },
     lazy      => 1,
@@ -101,16 +101,6 @@ sub add_class_attribute {
             }
         }
     }
-}
-
-sub remove_class_attribute {
-    my ($self, $name) = @_;
-
-    return unless $self->has_class_attribute($name);
-
-    # TODO: needs $attr->remove_accessors() and $attr->detach_from_class() ?
-
-    return $self->_remove_class_attribute($name);
 }
 
 sub get_all_class_attributes {
