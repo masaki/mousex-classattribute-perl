@@ -88,10 +88,10 @@ sub add_class_attribute {
                 my $attr = $self->find_class_attribute_by_name($name)
                     or confess "Could not find an attribute by the name of '$name' to inherit from";
 
-                $attr->clone_parent($self, $name, %options);
+                $attr->clone_parent_class_attribute($self, $name, %options);
             }
             else {
-                $metaclass->create($self, $name, %options);
+                $metaclass->create_class_attribute($self, $name, %options);
             }
         }
     }
