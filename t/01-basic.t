@@ -1,9 +1,10 @@
 use strict;
 use FindBin;
 use lib "$FindBin::Bin/lib";
-use Test::More tests => 14;
+use Test::More tests => 16;
 use Test::Exception;
 use HasClassAttribute;
+use Child;
 
 my $class = 'HasClassAttribute';
 is $class->ObjectCount => 0, 'ObjectCount() is 0';
@@ -36,13 +37,13 @@ is $class->ObjectCount => 0, 'ObjectCount() is 0';
     ok !defined $class->WeakAttribute, 'weak class attributes are weak, destory';
 }
 
-{
-    is $HasClassAttribute::Lazy => 0, '$HasClassAttribute::Lazy is 0';
-    is $class->LazyAttribute => 1, 'HasClassAttribute->LazyAttribute() is 1';
-    is $HasClassAttribute::Lazy => 1, '$HasClassAttribute::Lazy is 1 after calling LazyAttribute';
-}
+is $HasClassAttribute::Lazy => 0, '$HasClassAttribute::Lazy is 0';
+is $class->LazyAttribute => 1, 'HasClassAttribute->LazyAttribute() is 1';
+is $HasClassAttribute::Lazy => 1, '$HasClassAttribute::Lazy is 1 after calling LazyAttribute';
 
-{
-    throws_ok { $class->ReadOnlyAttribute(20) } qr/\QCannot assign a value to a read-only accessor/,
-        'cannot set read-only class attribute';
-}
+throws_ok { $class->ReadOnlyAttribute(20) } qr/\QCannot assign a value to a read-only accessor/,
+    'cannot set read-only class attribute';
+
+my $child = 'Child';
+is $child->ReadOnlyAttribute => 30, q{Child class can extend parent's class attribute};
+can_ok $child => 'YetAnotherAttribute';
