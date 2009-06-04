@@ -1,5 +1,6 @@
 package MouseX::ClassAttribute;
 
+use 5.008_001;
 use strict;
 use warnings;
 use base 'Exporter';
