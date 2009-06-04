@@ -12,7 +12,8 @@ my $child  = 'Child';
 my $parent_meta = $parent->meta;
 my $child_meta  = $child->meta;
 
-ok $parent_meta->has_class_attribute('ObjectCount'), q{has_class_attribute('ObjectCount') returns true};
+ok $parent_meta->has_class_attribute('ObjectCount'),
+    q{has_class_attribute('ObjectCount') returns true};
 
 {
     my $parent_attr_meta = $parent_meta->get_class_attribute('ObjectCount')->meta;
@@ -48,28 +49,28 @@ is_deeply
     [ sort (@class_attrs, 'YetAnotherAttribute') ],
     'Child get_class_attribute_map gets all class attributes';
 
-ok( ! Child->meta()->has_class_attribute('ObjectCount'),
-    q{has_class_attribute('ObjectCount') returns false for Child} );
+ok !$child_meta->has_class_attribute('ObjectCount'),
+    q{has_class_attribute('ObjectCount') returns false for Child};
 
-ok( Child->meta()->has_class_attribute('YetAnotherAttribute'),
-    q{has_class_attribute('YetAnotherAttribute') returns true for Child} );
+ok $child_meta->has_class_attribute('YetAnotherAttribute'),
+    q{has_class_attribute('YetAnotherAttribute') returns true for Child};
 
-ok( Child->can('YetAnotherAttribute'),
-    'Child has accessor for YetAnotherAttribute' );
+can_ok $child => 'YetAnotherAttribute';
 
-ok( Child->meta()->has_class_attribute_value('YetAnotherAttribute'),
-    'Child has class attribute value for YetAnotherAttribute' );
+ok $child_meta->has_class_attribute_value('YetAnotherAttribute'),
+    'Child has class attribute value for YetAnotherAttribute';
 
 TODO: {
-    local $TODO = "not implemented removing accessor";
-Child->meta()->remove_class_attribute('YetAnotherAttribute');
+    local $TODO = "removing accessor is not implemented";
 
-ok( ! Child->meta()->has_class_attribute('YetAnotherAttribute'),
-    q{... has_class_attribute('YetAnotherAttribute') returns false after remove_class_attribute} );
+    $child_meta->remove_class_attribute('YetAnotherAttribute');
 
-ok( ! Child->can('YetAnotherAttribute'),
-    'accessor for YetAnotherAttribute has been removed' );
+    ok !$child_meta->has_class_attribute('YetAnotherAttribute'),
+        q{... has_class_attribute('YetAnotherAttribute') returns false after remove_class_attribute};
 
-ok( ! Child->meta()->has_class_attribute_value('YetAnotherAttribute'),
-    'Child does not have a class attribute value for YetAnotherAttribute' );
+    ok !$child->can('YetAnotherAttribute'),
+        'accessor for YetAnotherAttribute has been removed';
+
+    ok !$child_meta->has_class_attribute_value('YetAnotherAttribute'),
+        'Child does not have a class attribute value for YetAnotherAttribute';
 };
