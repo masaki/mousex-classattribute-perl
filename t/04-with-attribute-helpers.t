@@ -17,7 +17,11 @@ use Test::More tests => 2;
         );
 }
 
-is( MyClass->counter(), 0 );
+SKIP: {
+    skip 'does not correspond to MouseX::AttributeHelpers', 2;
 
-MyClass->inc_counter();
-is( MyClass->counter(), 1 );
+    is( MyClass->counter(), 0 );
+
+    MyClass->inc_counter();
+    is( MyClass->counter(), 1 );
+};

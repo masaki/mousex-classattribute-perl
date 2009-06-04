@@ -60,8 +60,8 @@ can_ok $child => 'YetAnotherAttribute';
 ok $child_meta->has_class_attribute_value('YetAnotherAttribute'),
     'Child has class attribute value for YetAnotherAttribute';
 
-TODO: {
-    local $TODO = "removing accessor is not implemented";
+SKIP: {
+    skip 'removing accessor is not implemented', 3;
 
     $child_meta->remove_class_attribute('YetAnotherAttribute');
 
