@@ -3,9 +3,6 @@ use warnings;
 
 use Test::More;
 
-plan skip_all => 'This test is only run for the module author'
-    unless -d '.svn' || $ENV{IS_MAINTAINER};
-
 eval "use Test::Pod::Coverage 1.04";
 plan skip_all => "Test::Pod::Coverage 1.04 required for testing POD coverage"
     if $@;
@@ -16,9 +13,9 @@ my @modules = all_modules();
 plan tests => scalar @modules;
 
 my %trustme =
-    ( 'MouseX::ClassAttribute'                         => [ 'init_meta', 'class_has' ],
-      'MouseX::ClassAttribute::Role::Meta::Class'      => [ 'compute_all_applicable_class_attributes' ],
-      'MouseX::ClassAttribute::Meta::Method::Accessor' => [ '.+' ]
+    ( 'MouseX::ClassAttribute'                         => [ 'import', 'unimport', 'class_has' ],
+      #'MouseX::ClassAttribute::Role::Meta::Class'      => [ 'compute_all_applicable_class_attributes' ],
+      'MouseX::ClassAttribute::Meta::Method::Accessor' => [ '.+' ],
     );
 
 for my $module ( sort @modules )
